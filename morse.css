@@ -1,0 +1,172 @@
+
+html {
+    background-color: lightgray;
+    height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+#container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+#settings {
+    height: 100%;
+    width: 300px;
+    vertical-align: middle;
+    text-align: center;
+    padding: 20px;
+    
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#settings div {
+    margin: 10px;
+}
+
+#new-game {
+    background-color: gray;
+    color: rgba(255, 252, 249, .8);
+    padding: 16px;
+    border-radius: 10px;
+}
+
+#top-score {
+    opacity: .5;
+}
+
+#shameless-plug {
+    opacity: .5;
+    border-radius: 5px;
+}
+
+#legend {
+    filter: invert(75%);
+}
+
+#game {
+    max-width: 500px;
+    width: 100%;
+    background-color: #FFFCF9;
+    border: solid thin rgba(0, 0, 0, .3);
+    border-width: 0 1 0 1;
+    height: 100%;
+    text-align: center;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    align-items: center;
+}
+
+.logo {
+    text-align: center;
+    height: 5%;
+    
+    background-image: url('logo.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(255, 252, 249, .2);
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+
+    display: flex;
+    width: 100%;
+    filter: blur(5);
+}
+
+#info {
+    height: 53%;
+    max-width: 100%;
+    width: 500px;
+    margin: 20px;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#tap-viz {
+    width: 100%;
+    height: 4%;
+    margin: 0;
+    background-color: #C6E0FF;
+
+    display: flex;
+}
+
+#tap-area {
+    max-width: 500px;
+    width: 100%;
+    border: 0;
+    margin: 0;
+    height: 33%;
+    background-color: #2978A0;
+    display: inline-block;
+
+    color: rgba(255, 255, 255, .8);
+
+    text-align: center;
+}
+
+#tap-area::selection {
+    background-color:Transparent;
+    color:#2978A0;
+}
+
+#phrase {
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, .2);
+    width: 55%;
+    padding: 2em;
+    margin: auto;
+    clear: both;
+    text-align: center;
+    color: rgba(255, 255, 255, .8);
+    text-transform: uppercase;
+    display: block;
+}
+
+.last-session-result {
+    border-radius: 8px;
+    background-color: rgba(0, 127, 254, 1);
+    width: 50%;
+    display: block;
+    padding: 2em;
+    margin: auto;
+    text-align: center;
+    color: rgba(255, 255, 255, 1);
+    text-transform: uppercase;
+    opacity: 0;
+}
+
+.dot {
+    
+}
+
+@media only screen and (max-width: 500px) {
+    #settings {
+        display: none;
+    }
+
+    #game {
+        width: 100%;
+        border: 0;
+    }
+}

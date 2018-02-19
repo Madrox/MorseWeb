@@ -1,0 +1,52 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Morse Taps</title>
+    <meta name="description" content="Fun and games with morse code!">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
+
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="apple-touch-icon" href="icon.png">
+    <!-- Place favicon.ico in the root directory -->
+
+    <link rel="stylesheet" href="morse.css">
+</head>
+<body>
+    <div id="container">
+        <div id="game">
+            <h1 class="logo">Morse Taps</h1>
+            <div id="shameless-plug"><a href="https://itunes.apple.com/us/app/morse-taps/id1071713759?mt=8" style="display:inline-block;overflow:hidden;background:url(https://linkmaker.itunes.apple.com/assets/shared/badges/en-us/appstore-sm.svg) no-repeat;width:60px;height:15px;background-size:contain;"></a></div>
+            <div id="info">
+                <h3 id="phrase"><button id="new-game">New Game</button><span id="word"></span></h3>
+                <h4 class="last-session-result"></h4>
+            </div>
+            <div id="top-score">
+                    <h4 id="current-score"></h4>
+                    <h4>Top Score: <span id="score">0</span></h4>
+            </div>
+            <div id="tap-viz"></div>
+            <button id="tap-area">Tap morse code here</button>
+        </div>
+        <div id="settings">
+            <div>
+                    <img id="legend" src="morse_white.png" width="100%" />
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mobile/1.4.5/jquery.mobile.min.js" integrity="sha256-E3NHJIUaclYHEQ6uRnkvD72rAmbJYVJ92sCOU/0Rd7s=" crossorigin="anonymous"></script>
+    <script src="morse.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-49574875-2"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-49574875-2');
+    </script>
+
+</body>
+</html>
