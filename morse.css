@@ -15,7 +15,7 @@ body {
 #container {
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: center;
 }
 
 #settings {
@@ -36,9 +36,9 @@ body {
     margin: 10px;
 }
 
-#new-game {
-    background-color: gray;
-    color: rgba(255, 252, 249, .8);
+.new-game {
+    background-color: rgba(255, 252, 249, .6);
+    color: rgba(0, 0, 0, .5);
     padding: 16px;
     border-radius: 10px;
 }
@@ -80,7 +80,7 @@ body {
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: rgba(255, 252, 249, .2);
+    background-color: rgba(255, 252, 249, 1);
     text-indent: 100%;
     white-space: nowrap;
     overflow: hidden;
@@ -107,9 +107,11 @@ body {
     height: 4%;
     margin: 0;
     background-color: #C6E0FF;
+    overflow: hidden;
 
     display: flex;
 }
+
 
 #tap-area {
     max-width: 500px;
@@ -123,16 +125,87 @@ body {
     color: rgba(255, 255, 255, .8);
 
     text-align: center;
+    outline: none;
+
+    -webkit-touch-callout: none;
+      -webkit-user-select: none;
+       -khtml-user-select: none;
+         -moz-user-select: none;
+          -ms-user-select: none;
+              user-select: none;
 }
 
-#tap-area::selection {
+#tap-area:selection, #tap-area:active, #tap-area:focus {
     background-color:Transparent;
     color:#2978A0;
+    outline: none;
 }
 
-#phrase {
+.correct {
+    display: block;
+    position: absolute;
+    background-color: rgba(0, 127, 254, 1);
+    color: rgba(255, 255, 255, 1);
+    padding: 4px;
+    border-radius: 4px;
+    min-width: 50px;
+    left: 33%;
+    top: 33%;
+    opacity: 0;
+    transform: translate(50%, 50%);
+
+    animation-name: float-right;
+    animation-duration: 3s;
+}
+
+.incorrect {
+    display: block;
+    position: absolute;
+    background-color: rgba(254, 34, 0, 1);
+    color: rgba(255, 255, 255, 1);
+    padding: 4px;
+    border-radius: 4px;
+    min-width: 50px;
+    left: 33%;
+    top: 33%;
+    opacity: 0;
+    transform: translate(50%, 50%);
+
+    animation-name: float-left;
+    animation-duration: 3s;
+}
+
+@keyframes float-right {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: .8;
+    }
+    100% {
+        /* top: 10%; */
+        opacity: 0;
+        transform: translate(50%, -1000%) translate3D(100px, 100px, 0);
+    }
+}
+
+@keyframes float-left {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: .8;
+    }
+    100% {
+        /* top: 10%; */
+        opacity: 0;
+        transform: translate(50%, -1000%) translate3D(-100px, 100px, 0);
+    }
+}
+
+.phrase {
     border-radius: 8px;
-    background-color: rgba(0, 0, 0, .2);
+    background-color: rgba(255, 94, 91, .8);
     width: 55%;
     padding: 2em;
     margin: auto;
@@ -141,6 +214,24 @@ body {
     color: rgba(255, 255, 255, .8);
     text-transform: uppercase;
     display: block;
+    overflow: hidden;
+    background: linear-gradient(-90deg, rgba(255, 94, 91, .8), rgba(255, 94, 91, .8) 50%, rgba(255, 94, 91, .5) 50%, rgba(255, 94, 91, .5) 100%);
+    background-position: 100%;
+    background-size: 200% 200%;
+    animation-timing-function: linear;
+}
+
+.timer {
+    animation-name: timer;
+}
+
+@keyframes timer {
+    0% {
+        background-position-x: 100%;
+    }
+    100% {
+        background-position-x: 0%;
+    }
 }
 
 .last-session-result {
@@ -156,13 +247,26 @@ body {
     opacity: 0;
 }
 
-.dot {
-    
+#menu-button {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    z-index: 1000;
+    display: none;
+}
+
+#nav-toggle {
+    text-decoration: none;
+    color: #2978A0;
 }
 
 @media only screen and (max-width: 500px) {
     #settings {
         display: none;
+    }
+
+    #menu-button {
+        display: block;
     }
 
     #game {

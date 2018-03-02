@@ -50,12 +50,12 @@ class TapSession {
     }
 
     beginTap() {
+        clearTimeout(this.idleTimer);
         if (this.taps.length > 0) {
             this.taps[this.taps.length-1].nextLetterBegan();
         }
         this.inTap = true;
         this.taps.push(new Tap());
-        this.resetIdleTimeout();
     }
 
     endTap() {
@@ -71,6 +71,7 @@ class TapSession {
 
             this.inTap = false;
         }
+        this.resetIdleTimeout();
     }
 
     eval() {
@@ -165,6 +166,7 @@ class Game {
         this.onnewphrase = onnewphrase;
         this.onfinish = onfinish;
         this.done = false;
+        this.countdown = null;
         this.newPhrase();
     }
 
@@ -174,7 +176,23 @@ class Game {
         } else {
             this.currentPhrase = this.randomWord();
         }
-        this.onnewphrase(this.currentPhrase);
+        var timeLimit = 0;
+        if (this.stage >= 5) {
+            var lps = (-26.0*this.stage+596.0)/30.0;
+            if (lps < 3) {
+                lps = 3.0;
+            }
+            timeLimit = lps*this.currentPhrase.length;
+        }
+        
+        if (this.countdown) {
+            clearTimeout(this.countdown);
+        }
+        if (timeLimit > 0) {
+            var context = this;
+            this.countdown = setTimeout(function(){context.gameOver()}, timeLimit*1000);
+        }
+        this.onnewphrase(this.currentPhrase, timeLimit);
     }
 
     randomLetter() {
@@ -193,17 +211,72 @@ class Game {
         return word;
     }
 
+    score() {
+        return this.stage;
+    }
+
+    gameOver() {
+        this.onfinish(this.score());
+        this.done = true;
+    }
+
     userSaid(text) {
-        if (text == this.currentPhrase) {
-            this.stage++;
-            this.newPhrase();
-        } else {
-            this.onfinish(this.stage);
-            this.done = true;
+        if (!this.done) {
+            if (text == this.currentPhrase) {
+                this.stage++;
+                this.newPhrase();
+            } else {
+                this.gameOver();
+            }
         }
     }
 }
 
+class Viz {
+    constructor(canvas) {
+        this.w = canvas.width();
+        this.h = canvas.height();
+        this.c = canvas[0].getContext("2d");
+        this.c.canvas.width = this.w;
+        this.c.canvas.height = this.h;
+        this.started = false;
+        window.requestAnimationFrame(this.draw.bind(this));
+    }
+
+    start() {
+        this.started = true;
+    }
+
+    stop() {
+        this.started = false;
+    }
+
+    draw() {
+        if (this.c) {
+            // shift everything to the left:
+            var imageData = this.c.getImageData(1, 0, this.w, this.h);
+            this.c.putImageData(imageData, 0, 0);
+            // now clear the right-most pixels:
+            // this.c.clearRect(this.w-1, 0, 1, this.h);
+            if (this.started) {
+                this.c.beginPath();
+
+                var offset = 1000;
+
+                this.c.translate(-offset, 0);
+                this.c.moveTo(this.w-1,Math.round(this.h*.4));
+                this.c.lineTo(this.w-1,Math.round(this.h*.6));
+                this.c.lineWidth = 2;
+                this.c.shadowOffsetX = offset;
+                this.c.shadowColor = 'rgba(0,0,0,0.2)';
+                this.c.shadowBlur = 0;
+                this.c.stroke();
+                this.c.translate(offset, 0);
+            }
+            window.requestAnimationFrame(this.draw.bind(this));
+        }
+    }
+}
 
 $(document).ready(function() {
 
@@ -223,31 +296,48 @@ $(document).ready(function() {
     }
 
     function displayPhrase(phrase) {
-        $(".last-session-result").stop().css({opacity: 1}).text(phrase).animate({opacity: 0}, 5000);
-        session = null;
         if (game) {
+            if (game.currentPhrase == phrase) {
+                $(".phrase").last().append("<div class=\"correct response\">"+phrase+"</div>");
+            } else {
+                $(".phrase").last().append("<div class=\"incorrect response\">"+phrase+"</div>");
+            }
+            topScore(game.score());
             game.userSaid(phrase);
-            topScore(game.stage);
+        } else {
+            $(".last-session-result").stop().css({opacity: 1}).text(phrase).animate({opacity: 0}, 5000);
         }
+        session = null;
     }    
-    function newPhrase(phrase) {
-        $("#word").text(phrase).show();
+
+    function newPhrase(phrase, timeLimit) {
+        $(".word").text(phrase).show();
         if (game) {
-            $("#current-score").text("Current score: "+game.stage);
+            $("#current-score").text("Current score: "+game.score());
+        }
+        if (timeLimit) {
+            $(".phrase").stop().css("background-position-x", "100%");
+            $(".phrase").animate({
+                "background-position-x": "0%"
+            }, timeLimit*1000, 'linear');
         }
     }    
-    function gameOver(stage) {
+
+    function gameOver(score) {
+        $(".phrase").stop().css("background-position-x", "100%");
         $("#current-score").text("Game Over!");
-        $("#new-game").show();
-        $("#word").hide();
-        topScore(stage);
-        // $(".last-session-result").stop().css({opacity: 1}).text("Game over!");
+        $(".new-game").show();
+        $(".word").hide();
+        topScore(score);
+        game = null;
     }   
+
     function fingerDown() {
         if (!session) {
             session = new TapSession(currentPhraseType, displayPhrase);
         }
         session.beginTap();
+        viz.start();
         tone.start();
         $(this).css({color: 'rgba(0, 0, 0, 0)'});
     }
@@ -255,27 +345,44 @@ $(document).ready(function() {
         if (session) {
             session.endTap();
         }
+        viz.stop();
         tone.stop();
     }
     
     function newGame() {
         game = new Game(newPhrase, gameOver)
-        
-        $("#new-game").hide();
+        $(".response").remove();    
+        $(".new-game").hide();
     }
 
     var tone = new Tone(440); //hz
     var session = null;
     var game = null;
     var currentPhraseType = PhraseType.letter;
+    var viz = new Viz($("#tap-viz"));
     
-    $("#new-game").click(newGame);
+    $(".new-game").click(newGame);
+
+    $("#nav-toggle").click(function() {
+        $("#game").toggle();
+        $("#settings").toggle();
+    });
 
     $("#tap-area").on("vmousedown", fingerDown);
     $("#tap-area").on("vmouseup", fingerUp);
     $("#tap-area").mouseleave(fingerUp);
     $("#tap-area").mouseout(fingerUp);
     $("#tap-area").on("vmousecancel", fingerUp);
+    document.addEventListener("keydown", function(event) {
+        if (event.keyCode == 32) {
+            fingerDown();
+        }
+    })
+    document.addEventListener("keyup", function(event) {
+        if (event.keyCode == 32) {
+            fingerUp();
+        }
+    })
     
     topScore(0);
 });
@@ -1160,7 +1267,7 @@ Letters = Object.freeze({
     "3113": "x",
     "3133": "y",
     "3311": "z",
-    "1333": "1",
+    "13333": "1",
     "11333": "2",
     "11133": "3",
     "11113": "4",
